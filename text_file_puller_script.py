@@ -61,7 +61,8 @@ for i in range(2, sourceSheet.max_row):  # Skips header row
                               listOfFiles_dict[
                               sourceSheet.cell(row=i, column=5).value].tm_mday,
                               listOfFiles_dict[
-                              sourceSheet.cell(row=i, column=5).value].tm_year),
+                              sourceSheet.cell(row=i, column=5).value]
+                              .tm_year),
                      ':'.join(listOfFiles_dict[
                          sourceSheet.cell(row=i, column=5).value].tm_hour,
                          listOfFiles_dict[
@@ -91,15 +92,30 @@ if startContract.strip():
                 if re.match('*mvbase*', procName.lower()):
                     processID = proc.pid
                     processName = proc.name()
-            databaseTerminal = application.Application() \
-                .connect(process=processID)
-            databaseWindow = databaseTerminal[processName]
-            bringToFront = windll.user32.SetWindowPos
+                    bringToFront = windll.user32.SetWindowPos
             win32gui.EnumWindows(window_callback, processID)
             windowLoc = win32gui.GetWindowRect(appWindows[0])
             winX = appWindows[0]
             winY = appWindows[1]
+            winWidth = appWindows[2] - winX
+            winHeight = appWindows[3] - winY
+            # Here the -1 effectively locks the window on top. Make sure to
+            # change this back!
             bringToFront(appWindows[0], -1, winX, winY, 0, 0, 0x0001)
+
+            # Here we actually start interacting with the database
+            pyautogui.click(winX + (winWidth / 2), winY + (winHeight / 2))
+            # Press enter 5 times, to get back to the main menu from anywhere
+            pyautogui.typewrite(['enter'] * 5)
+            pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
+                                'enter'])
+            # Checks if it is ready for the first step. If not, stop
+            readyStatus = pyautogui.locateOnScreen(os.path.join(
+                                                   'Images', 'Step1.png'),
+                                                   minSearchTime=.5)
+            if not readyStatus:
+                print('Image not found.')
+                raise SystemExit(1)
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
