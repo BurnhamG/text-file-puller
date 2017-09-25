@@ -4,8 +4,10 @@ from datetime.datetime import now
 import glob
 import openpyxl
 import os
+import psutil
 import pyautogui
 from pywinauto import application
+import re
 import time
 
 os.chdir('S:\CSR\Contract Renewal Text Files')
@@ -72,7 +74,13 @@ if startContract.strip():
     for i in range(2, sourceSheet.max_row):
         if sourceSheet.cell(row=i, column=5) == startContract:
             # Here is where I need to set focus on the window and then input
-
+            for proc in psutil.process_iter():
+                procName = proc.name()
+                if re.match('*mvbase*', procName.lower()):
+                    processID = proc.pid
+            databaseTerminal = application.Application() \
+                .connect(process=processID)
+            databaseTerminal.
 # Setting current time = now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
