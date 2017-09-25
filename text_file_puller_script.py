@@ -1,6 +1,7 @@
 #! python3
 # This will pull text files from the database system
-from datetime.datetime import now
+from ctypes import windll
+from datetime import datetime
 import glob
 import openpyxl
 import os
@@ -9,6 +10,17 @@ import pyautogui
 from pywinauto import application
 import re
 import time
+import win32gui
+import win32process
+
+appWindows = []
+
+
+def window_callback(winHandle, pid):
+    tid, current_pid = win32process.GetWindowThreadProcessId(winHandle)
+    if pid == current_pid and win32gui.IsWindowVisible(winHandle):
+        appWindows.append(winHandle)
+
 
 os.chdir('S:\CSR\Contract Renewal Text Files')
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
@@ -78,10 +90,17 @@ if startContract.strip():
                 procName = proc.name()
                 if re.match('*mvbase*', procName.lower()):
                     processID = proc.pid
+                    processName = proc.name()
             databaseTerminal = application.Application() \
                 .connect(process=processID)
-            databaseTerminal.
-# Setting current time = now().strftime('%m-%d-%Y %H:%M:%S')
+            databaseWindow = databaseTerminal[processName]
+            bringToFront = windll.user32.SetWindowPos
+            win32gui.EnumWindows(window_callback, processID)
+            windowLoc = win32gui.GetWindowRect(appWindows[0])
+            winX = appWindows[0]
+            winY = appWindows[1]
+            bringToFront(appWindows[0], -1, winX, winY, 0, 0, 0x0001)
+# Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
 # Make sure this also pulls the non-contract items if that applies.
