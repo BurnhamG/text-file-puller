@@ -1,5 +1,6 @@
 #! python3
 # This will pull text files from the database system
+# Clean these up
 from ctypes import windll
 from datetime import datetime
 import glob
