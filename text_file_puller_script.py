@@ -22,6 +22,16 @@ def window_callback(winHandle, pid):
     if pid == current_pid and win32gui.IsWindowVisible(winHandle):
         appWindows.append(winHandle)
 
+def stepRecognize(image):
+    # Checks for text on screen. If none matching, stop
+    readyStatus = pyautogui.locateOnScreen(os.path.join(
+                                           'Images', 'Step1.png'),
+                                           minSearchTime=.5)
+    if not readyStatus:
+        print('Stage not found.')
+        raise SystemExit(1)
+    else:
+        return True
 
 os.chdir('S:\CSR\Contract Renewal Text Files')
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
@@ -110,13 +120,7 @@ if startContract.strip():
             pyautogui.typewrite(['enter'] * 5)
             pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
                                 'enter'])
-            # Checks if it is ready for the first step. If not, stop
-            readyStatus = pyautogui.locateOnScreen(os.path.join(
-                                                   'Images', 'Step1.png'),
-                                                   minSearchTime=.5)
-            if not readyStatus:
-                print('Image not found.')
-                raise SystemExit(1)
+
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
