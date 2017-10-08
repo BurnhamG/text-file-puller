@@ -22,16 +22,45 @@ def window_callback(winHandle, pid):
     if pid == current_pid and win32gui.IsWindowVisible(winHandle):
         appWindows.append(winHandle)
 
-def stepRecognize(image):
+
+def listEmailGroups():
+    print('Identifying groups for emailing...')
+
+    for i in listOfFiles:
+        listOfFiles_dict[i] = time.localtime(os.stat(i).st_mtime)
+
+    names_list = []
+
+    with open(os.path.join('DataFiles', 'CcList.txt'),
+              encoding='utf-8') as file:
+        names_list.append([line.rstrip() for line in file])
+
+    with open(os.path.join('DataFiles', 'NonConList.txt'),
+              encoding='utf-8') as file:
+        names_list.append([line.rstrip() for line in file])
+
+    with open(os.path.join('DataFiles', 'RepsThatNeedCc.txt'),
+              encoding='utf-8') as file:
+        names_list.append([line.rstrip() for line in file])
+
+    with open(os.path.join('DataFiles', 'NoProcess.txt'),
+              encoding='utf-8') as file:
+        names_list.append([line.rstrip() for line in file])
+
+    return names_list
+
+
+def stepRecognize(inputImage):
     # Checks for text on screen. If none matching, stop
     readyStatus = pyautogui.locateOnScreen(os.path.join(
-                                           'Images', 'Step1.png'),
+                                           'Images', inputImage),
                                            minSearchTime=.5)
     if not readyStatus:
         print('Stage not found.')
         raise SystemExit(1)
     else:
         return True
+
 
 os.chdir('S:\CSR\Contract Renewal Text Files')
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
@@ -40,27 +69,9 @@ emptyCount = 0
 listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
 
-print('Gathering a list of files that already exist...')
+allNames = listEmailGroups()
 
-for i in listOfFiles:
-    listOfFiles_dict[i] = time.localtime(os.stat(i).st_mtime)
-
-with open(os.path.join('DataFiles', 'CcList.txt'),
-          encoding='utf-8') as file:
-    listOfCCRecipients = [line.rstrip() for line in file]
-
-with open(os.path.join('DataFiles', 'NonConList.txt'),
-          encoding='utf-8') as file:
-    listOfNonConReps = [line.rstrip() for line in file]
-
-with open(os.path.join('DataFiles', 'RepsThatNeedCc.txt'),
-          encoding='utf-8') as file:
-    listOfRepsNeedingCc = [line.rstrip() for line in file]
-
-with open(os.path.join('DataFiles', 'NoProcess.txt'),
-          encoding='utf-8') as file:
-    listToAvoid = [line.rstrip() for line in file]
-
+listToAvoid = allNames[3]
 # Checks for files that have already been pulled
 for i in range(2, sourceSheet.max_row):  # Skips header row
 
