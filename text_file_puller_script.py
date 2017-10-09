@@ -70,8 +70,9 @@ listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
 
 allNames = listEmailGroups()
-
+listOfNonCon = allNames[1]
 listToAvoid = allNames[3]
+
 # Checks for files that have already been pulled
 for i in range(2, sourceSheet.max_row):  # Skips header row
 
@@ -105,6 +106,7 @@ print('What is the first contract you would like to pull? Leave this empty to \
         pull all text files.')
 startContract = input()
 
+# If the input isn't blank...
 if startContract.strip():
     for i in range(2, sourceSheet.max_row):
         if sourceSheet.cell(row=i, column=5) == startContract:
