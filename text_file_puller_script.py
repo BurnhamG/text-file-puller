@@ -131,6 +131,7 @@ if startContract.strip():
             pyautogui.typewrite(['enter'] * 5)
             pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
                                 'enter'])
+            # Check for image
 
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
