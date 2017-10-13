@@ -1,5 +1,5 @@
 #! python3
-# This will pull text files from the database system
+"""This will pull text files from the system."""
 # Clean these up
 from ctypes import windll
 from datetime import datetime
@@ -18,7 +18,11 @@ appWindows = []
 
 
 def window_callback(winHandle, pid):
-    """List the handle of the selected process based on process ID."""
+    """List the handle of the selected process based on process ID.
+
+    This is the callback function for win32gui.EnumWindows. winHandle is
+    the hwnd, the handle to a window.
+    """
     tid, current_pid = win32process.GetWindowThreadProcessId(winHandle)
     if pid == current_pid and win32gui.IsWindowVisible(winHandle):
         appWindows.append(winHandle)
@@ -53,9 +57,9 @@ def listEmailGroups():
 
 
 def stepRecognize(inputImage):
-    # Checks for text on screen. If none matching, stop
+    """Check for text on screen. If none matches, stop."""
     readyStatus = pyautogui.locateOnScreen(os.path.join(
-                                           'Images', inputImage),
+                                           'DataFiles/Images', inputImage),
                                            minSearchTime=.5)
     if not readyStatus:
         print('Stage not found.')
@@ -134,7 +138,7 @@ if startContract.strip():
             pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
                                 'enter'])
             # Check for image
-            stepRecognize
+            stepRecognize('Step1.png')
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
