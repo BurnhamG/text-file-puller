@@ -18,12 +18,14 @@ appWindows = []
 
 
 def window_callback(winHandle, pid):
+    """List the handle of the selected process based on process ID."""
     tid, current_pid = win32process.GetWindowThreadProcessId(winHandle)
     if pid == current_pid and win32gui.IsWindowVisible(winHandle):
         appWindows.append(winHandle)
 
 
 def listEmailGroups():
+    """Identify the groups of representatives to avoid certain files."""
     print('Identifying groups for emailing...')
 
     for i in listOfFiles:
@@ -132,7 +134,7 @@ if startContract.strip():
             pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
                                 'enter'])
             # Check for image
-
+            stepRecognize
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
