@@ -62,8 +62,7 @@ def stepRecognize(inputImage):
                                            'DataFiles/Images', inputImage),
                                            minSearchTime=.5)
     if not readyStatus:
-        print('Stage not found.')
-        raise SystemExit(1)
+        return False
     else:
         return True
 
@@ -138,7 +137,10 @@ if startContract.strip():
             pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
                                 'enter'])
             # Check for image
-            stepRecognize('Step1.png')
+            if stepRecognize('Step1.png'):
+                pyautogui.typewrite([datetime.now().strftime('%m'),
+                                    datetime.now.strftime('%d'),
+                                    datetime.now().strftime('%y')])
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
