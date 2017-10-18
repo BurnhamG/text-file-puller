@@ -67,6 +67,24 @@ def stepRecognize(inputImage):
         return True
 
 
+def getKeystrokes():
+    """Get an array of the keystrokes used when pulling text files."""
+    print('Obtaining keystrokes...')
+
+    keystrokes_list = []
+
+    with open(os.path.join('DataFiles', 'Keystrokes.txt'),
+              encoding='utf-8') as file:
+        keystrokes_list = file.readlines()
+        # Removes comments
+        keystrokes_list = [line for line in keystrokes_list if
+                           not line.startswith('#')]
+        for element in keystrokes_list:
+            keystrokes_list[element] = keystrokes_list[element].split(',')
+
+    return keystrokes_list
+
+
 os.chdir('S:\CSR\Contract Renewal Text Files')
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
 sourceSheet = sourceBook.sheetnames[0]
@@ -113,7 +131,7 @@ startContract = input()
 if startContract.strip():
     for i in range(2, sourceSheet.max_row):
         if sourceSheet.cell(row=i, column=5) == startContract:
-            # Here is where I need to set focus on the window and then input
+            # Set focus on the window and begin input
             for proc in psutil.process_iter():
                 procName = proc.name()
                 if re.match('*mvbase*', procName.lower()):
