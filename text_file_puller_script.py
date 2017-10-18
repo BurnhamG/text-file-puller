@@ -77,10 +77,9 @@ def getKeystrokes():
               encoding='utf-8') as file:
         keystrokes_list = file.readlines()
         # Removes comments
-        keystrokes_list = [line for line in keystrokes_list if
-                           not line.startswith('#')]
-        for element in keystrokes_list:
-            keystrokes_list[element] = keystrokes_list[element].split(',')
+        keystrokes_list = [[x.split('|') for x in [x.replace(', ', '|')
+                            for x in keystrokes_list
+                            if not x.startswith('#')]]]
 
     return keystrokes_list
 
@@ -93,6 +92,7 @@ listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
 
 allNames = listEmailGroups()
+keystrokes = getKeystrokes()
 
 listToAvoid = allNames[3]
 # Checks for files that have already been pulled
