@@ -150,10 +150,8 @@ if startContract.strip():
 
             # Here we actually start interacting with the database
             pyautogui.click(winX + (winWidth / 2), winY + (winHeight / 2))
-            # Press enter 5 times, to get back to the main menu from anywhere
-            pyautogui.typewrite(['enter'] * 5)
-            pyautogui.typewrite([3, 'enter', 10, 'enter', 32, 'enter', 3,
-                                'enter'])
+            pyautogui.typewrite(keystrokes[0])
+            pyautogui.typewrite(keystrokes[1])
             # Check for image
             if stepRecognize('Step1.png'):
                 pyautogui.typewrite([datetime.now().strftime('%m'),
