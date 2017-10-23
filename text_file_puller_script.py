@@ -34,7 +34,6 @@ def listEmailGroups():
     """Identify the groups of representatives to avoid certain files."""
     print('Identifying groups for emailing...')
 
-
     names_list = []
 
     with open(os.path.join('DataFiles', 'CcList.txt'),
@@ -101,36 +100,34 @@ def getWindow(inAppWindow):
 def findAlreadyPulled():
     """Mark files that have already been pulled with the pull time."""
     if sourceSheet.cell(row=i, column=5) + '.txt' in listOfFiles:
+        # TODO: Simplify this with a variable
         modified_date = ' '.join([
-                                '-'.join([
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_mon).strformat(%m),
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_mday).strformat(%d),
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_year).strformat(%y)
-                                        ]),
-                                ':'.join([
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_hour).strformat(%H),
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_min).strformat(%M),
-                                        str(listOfFiles_dict[
-                                            sourceSheet.cell(row=i, column=5)
-                                                .value]
-                                            .tm_sec).strformat(%S)
-                                        ])
-                                ])
+                                 '-'.join([
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_mon).strformat('%m'),
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_mday).strformat('%d'),
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_year).strformat('%y')]),
+                                 ':'.join([
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_hour).strformat('%H'),
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_min).strformat('%M'),
+                                          str(listOfFiles_dict[
+                                              sourceSheet.cell(row=i, column=5)
+                                              .value]
+                                              .tm_sec).strformat('%S')])])
     sourceSheet.cell(row=i, column=9).value = modified_date
 
 
@@ -144,14 +141,14 @@ def getContractInfo():
 
         # Ensure key for contract exists
         contractInfo.setdefault(contractNo, {'Companies': [companyNo],
-                                            'CompanyRep': companyRep,
-                                            'ContractRep': contractRep}
+                                             'CompanyRep': companyRep,
+                                             'ContractRep': contractRep}
                                 )
-        if sourceSheet['A' + str(row + 1)].value == None:
+        if sourceSheet['A' + str(row + 1)].value is None:
             contractInfo[contractNo]['Companies'].append(sourceSheet['E' +
-                                                                    str(i + 1)
-                                                                    ]
-                                                        )
+                                                                     str(i + 1)
+                                                                     ]
+                                                         )
 
 
 
@@ -215,15 +212,16 @@ elif pullContracts.strip() != '':
             # Check for image
             if not stepRecognize('Step1.png'):
                 raise SystemExit
-            if stepRecognize('Step1.png'):
+            # TODO: See if I need to check for every image or just some
+            elif stepRecognize('Step1.png'):
                 pyautogui.typewrite([datetime.now().month, '.01.',
                                     datetime.now().year - 1, 'enter'])
                 pyautogui.typewrite([datetime.now().month, datetime.now().day,
-                                    datetime.now().year], 'enter'])
+                                    datetime.now().year, 'enter'])
                 pyautogui.typewrite([sourceSheet.cell(row=i, column=5).value])
                 pyautogui.typewrite([sourceSheet.cell(row=i, column=1).value])
                 # Check for multiple companies on same contract
-                if sourceSheet.cell(row= i + 1, column=1).value == None:
+                if sourceSheet.cell(row=i + 1, column=1).value is None:
 
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
