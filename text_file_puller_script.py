@@ -137,18 +137,21 @@ def findAlreadyPulled():
 def getContractInfo():
     contractInfo = {}
     for row in range(2, sourceSheet.max_row + 1):
-        contractNo = sourceSheet['A' + str(i)]
-        companyNo = sourceSheet['E' + str(i)]
-        companyRep = sourceSheet['G' + str(i)]
-        contractRep = sourceSheet['H' + str(i)]
+        contractNo = sourceSheet['A' + str(row)]
+        companyNo = sourceSheet['E' + str(row)]
+        companyRep = sourceSheet['G' + str(row)]
+        contractRep = sourceSheet['H' + str(row)]
 
         # Ensure key for contract exists
         contractInfo.setdefault(contractNo, {'Companies': [companyNo],
                                             'CompanyRep': companyRep,
                                             'ContractRep': contractRep}
                                 )
-        if sourceSheet['A' + str(i + 1)].value == None:
-            contractInfo[contractNo]['Companies'].append(sourceSheet['E' + str(i + 1)])
+        if sourceSheet['A' + str(row + 1)].value == None:
+            contractInfo[contractNo]['Companies'].append(sourceSheet['E' +
+                                                                    str(i + 1)
+                                                                    ]
+                                                        )
 
 
 
