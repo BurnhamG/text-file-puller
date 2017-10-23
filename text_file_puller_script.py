@@ -86,6 +86,7 @@ def getKeystrokes():
 
 def getWindow(inAppWindow):
     """Set focus on the window and begin input."""
+    # TODO: Reintegrate this with main code
     for proc in psutil.process_iter():
         procName = proc.name()
         if re.match('*mvbase*', procName.lower()):
@@ -186,6 +187,10 @@ print('leave this empty to pull all text files.')
 print('Type "end" to exit.')
 pullContracts = input()
 
+# Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
+
+# Go through, pulling text files and saving them under the contract name.
+# Make sure this also pulls the non-contract items if that applies.
 if pullContracts.strip() == 'end':
     return SystemExit
 elif pullContracts.strip() != '':
@@ -222,8 +227,6 @@ elif pullContracts.strip() != '':
                 pyautogui.typewrite([sourceSheet.cell(row=i, column=1).value])
                 # Check for multiple companies on same contract
                 if sourceSheet.cell(row=i + 1, column=1).value is None:
-
-# Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-
-# Go through, pulling text files and saving them under the contract name.
-# Make sure this also pulls the non-contract items if that applies.
+                    pass
+else:
+    pass
