@@ -91,10 +91,9 @@ def getWindow(inAppWindow):
         procName = proc.name()
         if re.match('*mvbase*', procName.lower()):
             processID = proc.pid
-            processName = proc.name()
-            bringToFront = windll.user32.SetWindowPos
     win32gui.EnumWindows(window_callback, processID)
     windowLoc = win32gui.GetWindowRect(inAppWindow[0])
+
     return windowLoc
 
 
@@ -134,6 +133,7 @@ def findAlreadyPulled():
 
 def getContractInfo():
     contractInfo = {}
+    count = 1
     for row in range(2, sourceSheet.max_row + 1):
         contractNo = sourceSheet['A' + str(row)]
         companyNo = sourceSheet['E' + str(row)]
@@ -145,14 +145,12 @@ def getContractInfo():
                                              'CompanyRep': companyRep,
                                              'ContractRep': contractRep}
                                 )
-        if sourceSheet['A' + str(row + 1)].value is None:
-            contractInfo[contractNo]['Companies'].append(sourceSheet['E' +
-                                                                     str(i + 1)
-                                                                     ]
-                                                         )
-
-
-
+        # Check for contract with multiple companies
+        while sourceSheet['A' + str(row + count)].value is None:
+            contractInfo[contractNo]['Companies'].append(sourceSheet[
+                'E' + str(row + count)])
+            count += 1
+    return contractInfo
 
 
 os.chdir('S:\CSR\Contract Renewal Text Files')
@@ -192,15 +190,16 @@ pullContracts = input()
 # Go through, pulling text files and saving them under the contract name.
 # Make sure this also pulls the non-contract items if that applies.
 if pullContracts.strip() == 'end':
-    return SystemExit
+    raise SystemExit
 elif pullContracts.strip() != '':
     currentcontractNumber = startContract = pullContracts.split('-')[0]
     endContract = pullContracts.split('-')[1]
     windowCoords = getWindow(appWindows)
-    winX = windowLoc[0]
-    winY = windowLoc[1]
-    winWidth = windowLoc[2] - winX
-    winHeight = windowLoc[3] - winY
+    winX = windowCoords[0]
+    winY = windowCoords[1]
+    winWidth = windowCoords[2] - winX
+    winHeight = windowCoords[3] - winY
+    bringToFront = windll.user32.SetWindowPos
 
     # Here the -1 effectively locks the window on top. Make sure to
     # change this back!
