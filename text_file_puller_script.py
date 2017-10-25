@@ -36,15 +36,7 @@ def listEmailGroups():
 
     names_list = []
 
-    with open(os.path.join('DataFiles', 'CcList.txt'),
-              encoding='utf-8') as file:
-        names_list.append([line.rstrip() for line in file])
-
     with open(os.path.join('DataFiles', 'NonConList.txt'),
-              encoding='utf-8') as file:
-        names_list.append([line.rstrip() for line in file])
-
-    with open(os.path.join('DataFiles', 'RepsThatNeedCc.txt'),
               encoding='utf-8') as file:
         names_list.append([line.rstrip() for line in file])
 
@@ -132,33 +124,94 @@ def findAlreadyPulled():
 
 
 def getContractInfo():
+    """Put contracts into a dictionary for future reference."""
     contractInfo = {}
     count = 1
     for row in range(2, sourceSheet.max_row + 1):
-        contractNo = sourceSheet['A' + str(row)]
-        companyNo = sourceSheet['E' + str(row)]
-        companyRep = sourceSheet['G' + str(row)]
-        contractRep = sourceSheet['H' + str(row)]
+        contractNo = sourceSheet['A' + str(row)].value
+        companyNo = sourceSheet['E' + str(row)].value
+        companyRep = sourceSheet['G' + str(row)].value
+        contractRep = sourceSheet['H' + str(row)].value
 
         # Ensure key for contract exists
         contractInfo.setdefault(contractNo, {'Companies': [companyNo],
                                              'CompanyRep': companyRep,
-                                             'ContractRep': contractRep}
+                                             'ContractRep': contractRep,
+                                             'CompanyCount': 1}
                                 )
         # Check for contract with multiple companies
         while sourceSheet['A' + str(row + count)].value is None:
             contractInfo[contractNo]['Companies'].append(sourceSheet[
                 'E' + str(row + count)])
             count += 1
+            contractInfo[contractNo]['CompanyCount'] += 1
     return contractInfo
 
 
-os.chdir('S:\CSR\Contract Renewal Text Files')
+def saveContractFiles(allContracts, contract, keystrokes, nonConReps, non=0):
+    """Pull the files from the database."""
+    count = 0
+    txtPath = os.path.join('H:', os.sep, 'CONTXTFILES', contract)
+
+    pyautogui.typewrite(Now.month)
+    pyautogui.typewrite('.01.')
+    pyautogui.typewrite(Now.year - 1)
+    pyautogui.typewrite(['enter'])
+    pyautogui.typewrite(Now.month)
+    pyautogui.typewrite(Now.day)
+    pyautogui.typewrite(Now.year)
+    pyautogui.typewrite(['enter'])
+    for items in allContracts[contract]['Companies']:
+        pyautogui.typewrite(allContracts[contract]['Companies'][items - 1])
+        pyautogui.typewrite(['enter'])
+        pyautogui.typewrite(contract)
+        pyautogui.typewrite(['enter'])
+        count += 1
+    pyautogui.typewrite(['enter'])
+    if count > 1:
+        pyautogui.typewrite(keystrokes[4])
+    if non != 0:
+        pyautogui.typewrite(keystrokes[6])
+    else:
+        pyautogui.typewrite(keystrokes[5])
+    pyautogui.typewrite(['enter'])
+    pyautogui.typewrite(['enter'])
+    pyautogui.typewrite(txtPath)
+    pyautogui.typewrite(['enter'] * 2)
+    time.sleep(10)
+    if allContracts[contract]['CompanyRep'] in nonConReps and non == 0:
+        saveContractFiles(allContracts,
+                          contract,
+                          keystrokes,
+                          nonConReps,
+                          non=1
+                          )
+
+
+def menuSetup(winX, winWidth, winY, winHeight):
+    """Prepare the database screen for the input."""
+    pyautogui.click(winX + (winWidth / 2), winY + (winHeight / 2))
+    pyautogui.typewrite(['enter'] * 5)
+    for i in range(0, 4):
+        pyautogui.typewrite(keystrokes[i])
+        pyautogui.typewrite(['enter'])
+
+
+def exitStrategy():
+    """Exit the program."""
+    print('All files pulled!')
+    input()
+
+
+"""This is the main body of the program."""
+os.chdir(os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files'))
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
 sourceSheet = sourceBook.sheetnames[0]
 emptyCount = 0
 listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
+Now = datetime.now()
+
 # Modification time of the files
 for i in listOfFiles:
     listOfFiles_dict[i] = time.localtime(os.stat(i).st_mtime)
@@ -167,7 +220,8 @@ appWindows = []
 allNames = listEmailGroups()
 keystrokes = getKeystrokes()
 
-listToAvoid = allNames[3]
+nonConReps = allNames[0]
+listToAvoid = allNames[1]
 # Checks for files that have already been pulled
 for i in range(2, sourceSheet.max_row + 1):  # Skips header row
     # TODO: Check what column should be examined
@@ -185,47 +239,37 @@ print('leave this empty to pull all text files.')
 print('Type "end" to exit.')
 pullContracts = input()
 
+allContracts = getContractInfo()
 # Setting current time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
 # Go through, pulling text files and saving them under the contract name.
 # Make sure this also pulls the non-contract items if that applies.
+
+windowCoords = getWindow(appWindows)
+winX = windowCoords[0]
+winY = windowCoords[1]
+winWidth = windowCoords[2] - winX
+winHeight = windowCoords[3] - winY
+setWinPos = windll.user32.SetWindowPos
+# The -1 locks the window on top.
+setWinPos(appWindows[0], -1, winX, winY, 0, 0, 0x0001)
+
 if pullContracts.strip() == 'end':
+    setWinPos(appWindows[0], 1, winX, winY, 0, 0, 0x0001)
     raise SystemExit
 elif pullContracts.strip() != '':
-    currentcontractNumber = startContract = pullContracts.split('-')[0]
+    startContract = pullContracts.split('-')[0]
     endContract = pullContracts.split('-')[1]
-    windowCoords = getWindow(appWindows)
-    winX = windowCoords[0]
-    winY = windowCoords[1]
-    winWidth = windowCoords[2] - winX
-    winHeight = windowCoords[3] - winY
-    bringToFront = windll.user32.SetWindowPos
 
-    # Here the -1 effectively locks the window on top. Make sure to
-    # change this back!
-    bringToFront(appWindows[0], -1, winX, winY, 0, 0, 0x0001)
-
-    # Here we actually start interacting with the database
-    pyautogui.click(winX + (winWidth / 2), winY + (winHeight / 2))
-    pyautogui.typewrite(keystrokes[0] * 5)
-    pyautogui.typewrite(keystrokes[1])
-    for i in range(2, sourceSheet.max_row + 1):
-
-        if sourceSheet.cell(row=i, column=1).value == currentContractNumber:
-
-            # Check for image
-            if not stepRecognize('Step1.png'):
-                raise SystemExit
-            # TODO: See if I need to check for every image or just some
-            elif stepRecognize('Step1.png'):
-                pyautogui.typewrite([datetime.now().month, '.01.',
-                                    datetime.now().year - 1, 'enter'])
-                pyautogui.typewrite([datetime.now().month, datetime.now().day,
-                                    datetime.now().year, 'enter'])
-                pyautogui.typewrite([sourceSheet.cell(row=i, column=5).value])
-                pyautogui.typewrite([sourceSheet.cell(row=i, column=1).value])
-                # Check for multiple companies on same contract
-                if sourceSheet.cell(row=i + 1, column=1).value is None:
-                    pass
+    # Start interacting with the database
+    menuSetup(winX, winWidth, winY, winHeight)
+    for contract in range(startContract, endContract + 1):
+        if contract in allContracts:
+            saveContractFiles(allContracts, contract, keystrokes, nonConReps)
 else:
-    pass
+    menuSetup(winX, winWidth, winY, winHeight)
+    for contract in sorted(allContracts):
+        saveContractFiles(allContracts, contract, keystrokes, nonConReps)
+
+setWinPos(appWindows[0], 1, winX, winY, 0, 0, 0x0001)
+exitStrategy()
