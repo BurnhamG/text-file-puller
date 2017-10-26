@@ -92,33 +92,27 @@ def getWindow(inAppWindow):
 def findAlreadyPulled():
     """Mark files that have already been pulled with the pull time."""
     if sourceSheet.cell(row=i, column=5) + '.txt' in listOfFiles:
-        # TODO: Simplify this with a variable
+        cellvalue = sourceSheet.cell(row=i, column=5).value
         modified_date = ' '.join([
                                  '-'.join([
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_mon).strformat('%m'),
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_mday).strformat('%d'),
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_year).strformat('%y')]),
                                  ':'.join([
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_hour).strformat('%H'),
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_min).strformat('%M'),
                                           str(listOfFiles_dict[
-                                              sourceSheet.cell(row=i, column=5)
-                                              .value]
+                                              cellvalue]
                                               .tm_sec).strformat('%S')])])
     sourceSheet.cell(row=i, column=9).value = modified_date
 
