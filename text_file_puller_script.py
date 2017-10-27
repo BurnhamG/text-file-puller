@@ -12,7 +12,6 @@ import openpyxl
 import os
 import psutil
 import pyautogui
-from pywinauto import application
 import re
 import time
 import win32gui
@@ -48,7 +47,10 @@ def listEmailGroups():
 
 
 def stepRecognize(inputImage):
-    """Check for text on screen. If none matches, stop."""
+    """Check for text on screen. If none matches, stop.
+
+    Can be slow, but may have to use this to ensure proper performance
+    """
     readyStatus = pyautogui.locateOnScreen(os.path.join(
                                            'DataFiles/Images', inputImage),
                                            minSearchTime=.5)
