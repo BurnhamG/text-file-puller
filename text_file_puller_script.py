@@ -96,24 +96,24 @@ def findAlreadyPulled():
         modified_date = ' '.join([
                                  '-'.join([
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_mon).strformat('%m'),
+                                              cellvalue].tm_mon)
+                                          .strformat('%m'),
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_mday).strformat('%d'),
+                                              cellvalue].tm_mday)
+                                          .strformat('%d'),
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_year).strformat('%y')]),
+                                              cellvalue].tm_year)
+                                          .strformat('%y')]),
                                  ':'.join([
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_hour).strformat('%H'),
+                                              cellvalue].tm_hour)
+                                          .strformat('%H'),
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_min).strformat('%M'),
+                                              cellvalue].tm_min)
+                                          .strformat('%M'),
                                           str(listOfFiles_dict[
-                                              cellvalue]
-                                              .tm_sec).strformat('%S')])])
+                                              cellvalue].tm_sec)
+                                          .strformat('%S')])])
     sourceSheet.cell(row=i, column=9).value = modified_date
 
 
@@ -171,6 +171,8 @@ def saveContractFiles(allContracts, contract, keystrokes, nonConReps, non=0):
     pyautogui.typewrite(['enter'])
     pyautogui.typewrite(['enter'])
     pyautogui.typewrite(txtPath)
+    if non == 1:
+        pyautogui.typewrite('NON')
     pyautogui.typewrite(['enter'] * 2)
     time.sleep(10)
     if allContracts[contract]['CompanyRep'] in nonConReps and non == 0:
