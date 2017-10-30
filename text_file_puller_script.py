@@ -10,6 +10,7 @@ from datetime import datetime
 import glob
 import openpyxl
 import os
+from pathlib import Path
 import psutil
 import pyautogui
 import re
@@ -90,8 +91,6 @@ def getWindow(inAppWindow):
             raise SystemExit
     win32gui.EnumWindows(window_callback, processID)
     windowLoc = win32gui.GetWindowRect(inAppWindow[0])
-
-
 
     return windowLoc
 
@@ -207,7 +206,23 @@ def exitStrategy():
 
 
 """This is the main body of the program."""
-os.chdir(os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files'))
+textFilePath = os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files')
+createDir = ''
+print('Where would you like the text files stored?')
+textFilePath = input('Default is' + textFilePath + ': ') \
+    or textFilePath
+if Path(textFilePath).exists:
+    os.chdir(textFilePath)
+else:
+    print('This directory does not exist.')
+    while not createDir:
+        createDir = input("Would you like to create it? (y/n) ")
+    if str.upper(createDir) == 'Y':
+        try:
+            os.makedirs(textFilePath)
+        except OSError:
+            if not os.path.isdir(textFilePath):
+                raise
 sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
 sourceSheet = sourceBook.sheetnames[0]
 emptyCount = 0
