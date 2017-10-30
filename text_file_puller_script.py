@@ -80,7 +80,6 @@ def getKeystrokes():
 
 def getWindow(inAppWindow):
     """Set focus on the window and begin input."""
-    # TODO: Reintegrate this with main code
     for proc in psutil.process_iter():
         procName = proc.name()
         if re.match('*mvbase*', procName.lower()):
@@ -256,6 +255,7 @@ if pullContracts.strip() == 'end':
     setWinPos(appWindows[0], 1, winX, winY, 0, 0, 0x0001)
     raise SystemExit
 elif pullContracts.strip() != '':
+    # Separate the beginning and end of the range.
     startContract = pullContracts.split('-')[0]
     endContract = pullContracts.split('-')[1]
 
