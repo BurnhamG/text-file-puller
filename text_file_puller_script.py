@@ -223,7 +223,12 @@ else:
         except OSError:
             if not os.path.isdir(textFilePath):
                 raise
-sourceBook = openpyxl.load_workbook(glob.glob('*.xlsx'))
+listOfExcelFiles = glob.glob('*.xlsx')
+for sheet in listOfExcelFiles:
+    useSheet = input('Is ' + sheet + ' the source spreadsheet? (y/n) ')
+    if str.upper(useSheet) == 'Y':
+        sourceBook = openpyxl.load_workbook(sheet)
+        break
 sourceSheet = sourceBook.sheetnames[0]
 emptyCount = 0
 listOfFiles = glob.glob('*.txt')
