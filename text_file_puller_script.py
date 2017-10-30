@@ -224,6 +224,9 @@ else:
             if not os.path.isdir(textFilePath):
                 raise
 listOfExcelFiles = glob.glob('*.xlsx')
+if not listOfExcelFiles:
+    print('Excel files not found.')
+    raise SystemExit
 for sheet in listOfExcelFiles:
     useSheet = input('Is ' + sheet + ' the source spreadsheet? (y/n) ')
     if str.upper(useSheet) == 'Y':
