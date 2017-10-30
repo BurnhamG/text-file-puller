@@ -209,7 +209,7 @@ def exitStrategy():
 textFilePath = os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files')
 createDir = ''
 print('Where would you like the text files stored?')
-textFilePath = input('Default is' + textFilePath + ': ') \
+textFilePath = input('Default is ' + textFilePath + ': ') \
     or textFilePath
 if Path(textFilePath).exists:
     os.chdir(textFilePath)
