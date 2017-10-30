@@ -84,8 +84,14 @@ def getWindow(inAppWindow):
         procName = proc.name()
         if re.match('*mvbase*', procName.lower()):
             processID = proc.pid
+        else:
+            print('No window detected.')
+            input()
+            raise SystemExit
     win32gui.EnumWindows(window_callback, processID)
     windowLoc = win32gui.GetWindowRect(inAppWindow[0])
+
+
 
     return windowLoc
 
