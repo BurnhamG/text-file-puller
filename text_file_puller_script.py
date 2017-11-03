@@ -126,8 +126,8 @@ def findAlreadyPulled():
 def getContractInfo():
     """Put contracts into a dictionary for future reference."""
     contractInfo = {}
-    count = 1
     for row in range(2, sourceSheet.max_row + 1):
+        count = 1
         contractNo = sourceSheet['A' + str(row)].value
         companyNo = sourceSheet['E' + str(row)].value
         companyRep = sourceSheet['G' + str(row)].value
