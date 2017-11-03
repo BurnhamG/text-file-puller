@@ -128,10 +128,10 @@ def getContractInfo():
     contractInfo = {}
     for row in range(2, sourceSheet.max_row + 1):
         count = 1
-        contractNo = sourceSheet['A' + str(row)].value
-        companyNo = sourceSheet['E' + str(row)].value
-        companyRep = sourceSheet['G' + str(row)].value
-        contractRep = sourceSheet['H' + str(row)].value
+        contractNo = str(sourceSheet['A' + str(row)].value)
+        companyNo = str(sourceSheet['E' + str(row)].value)
+        companyRep = str(sourceSheet['G' + str(row)].value)
+        contractRep = str(sourceSheet['H' + str(row)].value)
 
         # Ensure key for contract exists
         contractInfo.setdefault(contractNo, {'Companies': [companyNo],
@@ -141,8 +141,8 @@ def getContractInfo():
                                 )
         # Check for contract with multiple companies
         while sourceSheet['A' + str(row + count)].value is None:
-            contractInfo[contractNo]['Companies'].append(sourceSheet[
-                'E' + str(row + count)])
+            contractInfo[contractNo]['Companies'].append(str(sourceSheet[
+                'E' + str(row + count)]))
             count += 1
             contractInfo[contractNo]['CompanyCount'] += 1
     return contractInfo
@@ -151,15 +151,16 @@ def getContractInfo():
 def saveContractFiles(allContracts, contract, keystrokes, nonConReps, non=0):
     """Pull the files from the database."""
     count = 0
+    Now = datetime.now()
     txtPath = os.path.join('H:', os.sep, 'CONTXTFILES', contract)
 
-    pyautogui.typewrite(Now.month)
+    pyautogui.typewrite(str(Now.month))
     pyautogui.typewrite('.01.')
-    pyautogui.typewrite(Now.year - 1)
+    pyautogui.typewrite(str(Now.year - 1))
     pyautogui.typewrite(['enter'])
     pyautogui.typewrite(['enter'])
-    for items in allContracts[contract]['Companies']:
-        pyautogui.typewrite(allContracts[contract]['Companies'][items - 1])
+    for company in allContracts[contract]['Companies']:
+        pyautogui.typewrite(company)
         pyautogui.typewrite(['enter'])
         pyautogui.typewrite(contract)
         pyautogui.typewrite(['enter'])
@@ -167,6 +168,7 @@ def saveContractFiles(allContracts, contract, keystrokes, nonConReps, non=0):
     pyautogui.typewrite(['enter'])
     if count > 1:
         pyautogui.typewrite(keystrokes[4])
+        pyautogui.typewrite(['enter'])
     if non != 0:
         pyautogui.typewrite(keystrokes[6])
     else:
@@ -191,8 +193,8 @@ def menuSetup(winX, winWidth, winY, winHeight):
     """Prepare the database screen for the input."""
     pyautogui.click(winX + (winWidth / 2), winY + (winHeight / 2))
     pyautogui.typewrite(['enter'] * 5)
-    for i in range(0, 4):
-        pyautogui.typewrite(keystrokes[i])
+    for key in keystrokes:
+        pyautogui.typewrite(key)
         pyautogui.typewrite(['enter'])
 
 
@@ -233,7 +235,6 @@ sourceSheet = sourceBook.sheetnames[0]
 emptyCount = 0
 listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
-Now = datetime.now()
 
 # Modification time of the files
 for i in listOfFiles:
