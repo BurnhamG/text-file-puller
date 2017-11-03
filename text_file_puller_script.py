@@ -157,9 +157,6 @@ def saveContractFiles(allContracts, contract, keystrokes, nonConReps, non=0):
     pyautogui.typewrite('.01.')
     pyautogui.typewrite(Now.year - 1)
     pyautogui.typewrite(['enter'])
-    pyautogui.typewrite(Now.month)
-    pyautogui.typewrite(Now.day)
-    pyautogui.typewrite(Now.year)
     pyautogui.typewrite(['enter'])
     for items in allContracts[contract]['Companies']:
         pyautogui.typewrite(allContracts[contract]['Companies'][items - 1])
