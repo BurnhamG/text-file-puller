@@ -72,7 +72,7 @@ def getKeystrokes():
               encoding='utf-8') as file:
         keystrokes_list = file.readlines()
         # Removes comments
-        keystrokes_list = [[x.split('|') for x in [x.replace(', ', '|')
+        keystrokes_list = [[x.split('|') for x in [x.replace(', ', '|').rstrip()
                             for x in keystrokes_list
                             if not x.startswith('#')]]]
 
@@ -226,12 +226,12 @@ listOfExcelFiles = glob.glob('*.xlsx')
 if not listOfExcelFiles:
     print('Excel files not found.')
     raise SystemExit
-for sheet in listOfExcelFiles:
-    useSheet = input('Is ' + sheet + ' the source spreadsheet? (y/n) ')
-    if str.upper(useSheet) == 'Y':
-        sourceBook = openpyxl.load_workbook(sheet)
+for excelfile in listOfExcelFiles:
+    useFile = input('Is ' + excelfile + ' the source spreadsheet? (y/n) ')
+    if str.upper(useFile) == 'Y':
+        sourceBook = openpyxl.load_workbook(excelfile)
         break
-sourceSheet = sourceBook.sheetnames[0]
+sourceSheet = sourceBook[sourceBook.sheetnames[0]]
 emptyCount = 0
 listOfFiles = glob.glob('*.txt')
 listOfFiles_dict = {}
