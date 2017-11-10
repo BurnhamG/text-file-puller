@@ -97,8 +97,8 @@ def getWindow(inAppWindow):
 
 def findAlreadyPulled():
     """Mark files that have already been pulled with the pull time."""
-    if sourceSheet.cell(row=i, column=5) + '.txt' in listOfFiles:
-        cellvalue = sourceSheet.cell(row=i, column=5).value
+    cellvalue = sourceSheet.cell(row=i, column=5).value
+    if str(cellvalue) + '.txt' in listOfFiles:
         modified_date = ' '.join([
                                  '-'.join([
                                           str(listOfFiles_dict[
