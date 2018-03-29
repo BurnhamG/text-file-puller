@@ -25,7 +25,7 @@ def window_callback(winHandle, pid):
     This is the callback function for win32gui.EnumWindows. winHandle is
     the hwnd, the handle to a window.
     """
-    tid, current_pid = win32process.GetWindowThreadProcessId(winHandle)
+    _, current_pid = win32process.GetWindowThreadProcessId(winHandle)
     if pid == current_pid and win32gui.IsWindowVisible(winHandle):
         appWindows.append(winHandle)
 
@@ -58,8 +58,6 @@ def stepRecognize(inputImage):
     if not readyStatus:
         print('Image not found.')
         return False
-    else:
-        return True
 
 
 def getKeystrokes():
@@ -204,7 +202,7 @@ def exitStrategy():
     input()
 
 
-"""This is the main body of the program."""
+# This is the main body of the program.
 textFilePath = os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files')
 createDir = ''
 print('Where would you like the text files stored?')
