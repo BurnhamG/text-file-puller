@@ -37,12 +37,12 @@ def listEmailGroups():
     names_list = []
 
     with open(os.path.join('DataFiles', 'NonConList.txt'),
-              encoding='utf-8') as file:
-        names_list.append([line.rstrip() for line in file])
+              encoding='utf-8') as f:
+        names_list.append([line.rstrip() for line in f])
 
     with open(os.path.join('DataFiles', 'NoProcess.txt'),
-              encoding='utf-8') as file:
-        names_list.append([line.rstrip() for line in file])
+              encoding='utf-8') as f:
+        names_list.append([line.rstrip() for line in f])
 
     return names_list
 
@@ -50,7 +50,7 @@ def listEmailGroups():
 def stepRecognize(inputImage):
     """Check for text on screen. If none matches, stop.
 
-    Can be slow, but may have to use this to ensure proper performance
+    In reserve in case this becomes necessary
     """
     readyStatus = pyautogui.locateOnScreen(os.path.join(
                                            'DataFiles/Images', inputImage),
@@ -67,8 +67,8 @@ def getKeystrokes():
     keystrokes_list = []
 
     with open(os.path.join('DataFiles', 'Keystrokes.txt'),
-              encoding='utf-8') as file:
-        keystrokes_list = file.readlines()
+              encoding='utf-8') as f:
+        keystrokes_list = f.readlines()
         # Removes comments
         keystrokes_list = [[x.split('|') for x in [x.replace(', ', '|').rstrip()
                             for x in keystrokes_list
