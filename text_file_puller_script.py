@@ -1,8 +1,7 @@
 #! python3
-"""This will pull text files from the system.
+"""This will pull contract text files from the system.
 
-Much of this is based on code from automatetheboringstuff.com, particularly
-regarding Excel spreadsheets.
+Excel code based on examples from www.automatetheboringstuff.com/chapter12
 """
 import glob
 import os
@@ -11,7 +10,6 @@ import time
 import win32gui
 from ctypes import windll
 from datetime import datetime
-from pathlib import Path
 
 import openpyxl
 import psutil
@@ -56,9 +54,9 @@ def get_keystrokes(file_path):
               encoding='utf-8') as f:
         list_of_keystrokes = f.readlines()
         # Removes comments
-        list_of_keystrokes = [[x.split('|') for x in [x.replace(', ', '|').rstrip()
-                                                      for x in list_of_keystrokes
-                                                      if not x.startswith('#')]]]
+        list_of_keystrokes = [x.split('|') for x in [x.replace(', ', '|').rstrip()
+                                                     for x in list_of_keystrokes
+                                                     if not x.startswith('#')]]
 
     return list_of_keystrokes
 
@@ -166,35 +164,60 @@ def menu_setup(win_x, win_width, win_y, win_height, in_keystrokes):
         pyautogui.typewrite(['enter'])
 
 
-# This is the main body of the program.
-def choose_text_file_directory():
-    text_file_path = os.path.join('S:', os.sep, 'CSR', 'Contract Renewal Text Files')
-    create_dir = ''
+def choose_text_file_directory(file_path):
+    text_file_path = os.path.join(file_path, 'Contract Renewal Text Files')
+    create_dir = None
     print('Where would you like the text files stored?')
-    text_file_path = input('Default is ' + text_file_path + ': ') \
-                     or text_file_path
-    if Path(text_file_path).exists():
+    print('Please enter the full path.')
+    text_file_path_selection = input('Default is ' + text_file_path + ': ')
+    if text_file_path_selection != '':
+        text_file_path = text_file_path_selection
+    if os.path.exists(text_file_path):
         os.chdir(text_file_path)
     else:
         print('This directory does not exist.')
         while not create_dir:
-            create_dir = input("Would you like to create it? (y/n) ")
-        if str.upper(create_dir) == 'Y':
+            create_dir = input("Would you like to create it? ([y]es/[n]o) ")
+        if create_dir.lower() == 'y':
             try:
                 os.makedirs(text_file_path)
-            except OSError:
-                if not os.path.isdir(text_file_path):
-                    raise
+            except OSError as oe:
+                print('The system encountered an error:')
+                print(oe)
+                raise SystemExit
+        else:
+            print('Goodbye!')
+            raise SystemExit
 
 
 def get_source_spreadsheet():
-    list_of_excel_files = glob.glob('*.xlsx')
+    search_here = None
+    list_of_excel_files = None
+    print(f'The current directory is {os.getcwd()}')
+    while not search_here:
+        search_here = input('Is this where you would like to search for the source spreadsheet ([y]es/[n]o/[e]xit)? ')
+        if search_here.lower() == 'e':
+            print('Goodbye!')
+            raise SystemExit
+        elif search_here.lower() == 'n':
+            search_here = input(
+                'Where would you like to search for the source spreadsheet? Please enter the full path: ')
+        elif search_here.lower() != 'y':
+            print('That is not a valid response, please try again.')
+            search_here = None
+        if os.path.exists(search_here):
+            os.chdir(search_here)
+            list_of_excel_files = glob.glob('*.xlsx')
+        else:
+            print('That is not a valid directory, please try again.')
+            search_here = None
+
     if not list_of_excel_files:
         print('Excel files not found.')
         raise SystemExit
     for file in list_of_excel_files:
-        use_file = input('Is ' + file + ' the source spreadsheet? (y/n) ')
-        if str.upper(use_file) == 'Y':
+        use_file = input('Is ' + file + ' the source spreadsheet ([y]es/[n]o)? ')
+        if use_file.lower() == 'y':
             source_book = openpyxl.load_workbook(file)
             return source_book[source_book.sheetnames[0]]
 
@@ -205,14 +228,13 @@ def get_file_modification_times():
 
     # Modification time of the files
     for f in list_of_files:
-        # list_of_files_dict[f] = time.localtime(os.stat(f).st_mtime)
         mod_times[f] = datetime.fromtimestamp(time.mktime(time.localtime(os.stat(f).st_mtime)))
 
     return mod_times
 
 
 def pull_contract_files():
-    file_path = os.path.abspath(__file__)
+    this_file_path = os.path.abspath(__file__)
     window_coords, hwnd = get_window()
     win_x = window_coords[0]
     win_y = window_coords[1]
@@ -223,11 +245,13 @@ def pull_contract_files():
     start_contract = None
     end_contract = None
 
-    keystrokes = get_keystrokes(file_path)
+    choose_text_file_directory(this_file_path)
+    get_file_modification_times()
+    keystrokes = get_keystrokes(this_file_path)
     source_sheet = get_source_spreadsheet()
     file_modifications = get_file_modification_times()
 
-    all_names = list_email_groups(file_path)
+    all_names = list_email_groups(this_file_path)
     non_con_reps = all_names[0]
     list_of_contracts_to_avoid = all_names[1]
 
@@ -249,7 +273,7 @@ def pull_contract_files():
         if contracts_to_pull.strip() == 'end':
             print("Goodbye!")
             raise SystemExit
-        elif re.search(r'^0-9-,', contracts_to_pull):
+        elif re.search(r'[^0-9-,]', contracts_to_pull, re.I):
             print("You entered an invalid character.")
             contracts_to_pull = -1
         elif ',' in contracts_to_pull:
@@ -287,12 +311,5 @@ def pull_contract_files():
     input()
 
 
-def execute():
-    choose_text_file_directory()
-    get_file_modification_times()
-
-    pull_contract_files()
-
-
 if __name__ == '__main__':
-    execute()
+    pull_contract_files()
